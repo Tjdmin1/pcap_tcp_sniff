@@ -99,3 +99,28 @@ int main()
 ```
 
 위와 같은 코드로 네트워크 디바이스를 잡아주고 그 뒤 패킷 캡쳐 핸들을 열어 필터를 적용시키고 루프를 돌며 got_packet의 함수가 계속 실행되는 코드입니다.
+
+## got_packet Code 해석
+```c
+void got_packet(u_char *args, const struct pcap_pkthdr *header,
+                              const u_char *packet)
+{
+  struct ethheader *eth = (struct ethheader *)packet;
+  if (ntohs(eth->ether_type) == 0x0800) { // 0x0800 is IP type
+    struct ipheader * ip = (struct ipheader *)
+                           (packet + sizeof(struct ethheader));
+    int ip_header_len = (ip->iph_ihl & 0x0F) * 4;
+    struct tcpheader *tcp = (struct tcpheader *)
+                            (packet + sizeof(struct ethheader) + ip_header_len);
+    if(ip->iph_protocol == IPPROTO_TCP){
+      printf("===========================================\n");
+      printf("ETH SRC Mac Address :%02x:%02x:%02x:%02x:%02x:%02x\n", eth->ether_shost[0], eth->ether_shost[1], eth->ether_shost[2], eth->ether_shost[3], eth->ether_shost[4], eth->ether_shost[5]);
+      printf("ETH DST Mac Address :%02x:%02x:%02x:%02x:%02x:%02x\n", eth->ether_dhost[0], eth->ether_dhost[1], eth->ether_dhost[2], eth->ether_dhost[3], eth->ether_dhost[4], eth->ether_dhost[5]);
+      printf(" IP Header SRC   IP : %s\n", inet_ntoa(ip->iph_sourceip));   
+      printf(" IP Header DST   IP : %s\n", inet_ntoa(ip->iph_destip));
+      printf("TCP Header SRC PORT : %d\n", ntohs(tcp->tcp_sport));   
+      printf("TCP Header DST PORT : %d\n", ntohs(tcp->tcp_dport));     
+    }
+  }
+}
+```
