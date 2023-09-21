@@ -105,21 +105,21 @@ int main()
 void got_packet(u_char *args, const struct pcap_pkthdr *header,
                               const u_char *packet)
 {
-  struct ethheader *eth = (struct ethheader *)packet;
-  if (ntohs(eth->ether_type) == 0x0800) { // 0x0800 is IP type
+  struct ethheader *eth = (struct ethheader *)packet;    // packet 포인터를 struct ethheader 포인터로 형변환하여 Ethernet 헤더를 가리키도록 합니다.
+  if (ntohs(eth->ether_type) == 0x0800) { // 0x0800 is IP type, Ethernet 헤더의 유형 필드를 확인하여 IP 패킷인지 확인합니다.
     struct ipheader * ip = (struct ipheader *)
-                           (packet + sizeof(struct ethheader));
-    int ip_header_len = (ip->iph_ihl & 0x0F) * 4;
+                           (packet + sizeof(struct ethheader));    // Ethernet 헤더 다음에 오는 데이터는 IP 헤더로 해당 IP 헤더 포인터를 생성합니다.
+    int ip_header_len = (ip->iph_ihl & 0x0F) * 4;    //IP 헤더 길이를 계산합니다.
     struct tcpheader *tcp = (struct tcpheader *)
-                            (packet + sizeof(struct ethheader) + ip_header_len);
-    if(ip->iph_protocol == IPPROTO_TCP){
+                            (packet + sizeof(struct ethheader) + ip_header_len);    // IP 헤더 다음에 오는 데이터는 TCP 헤더로 해당 TCP 헤더 포인터를 생성합니다.
+    if(ip->iph_protocol == IPPROTO_TCP){    //한번 더 TCP 패킷인지 확인합니다.
       printf("===========================================\n");
-      printf("ETH SRC Mac Address :%02x:%02x:%02x:%02x:%02x:%02x\n", eth->ether_shost[0], eth->ether_shost[1], eth->ether_shost[2], eth->ether_shost[3], eth->ether_shost[4], eth->ether_shost[5]);
-      printf("ETH DST Mac Address :%02x:%02x:%02x:%02x:%02x:%02x\n", eth->ether_dhost[0], eth->ether_dhost[1], eth->ether_dhost[2], eth->ether_dhost[3], eth->ether_dhost[4], eth->ether_dhost[5]);
-      printf(" IP Header SRC   IP : %s\n", inet_ntoa(ip->iph_sourceip));   
-      printf(" IP Header DST   IP : %s\n", inet_ntoa(ip->iph_destip));
-      printf("TCP Header SRC PORT : %d\n", ntohs(tcp->tcp_sport));   
-      printf("TCP Header DST PORT : %d\n", ntohs(tcp->tcp_dport));     
+      printf("ETH SRC Mac Address :%02x:%02x:%02x:%02x:%02x:%02x\n", eth->ether_shost[0], eth->ether_shost[1], eth->ether_shost[2], eth->ether_shost[3], eth->ether_shost[4], eth->ether_shost[5]);    //eth 안에 ether_shost 에 저장된 Mac 주소를 표시하는 배열들을 써줘서 Source mac 주소를 출력합니다.
+      printf("ETH DST Mac Address :%02x:%02x:%02x:%02x:%02x:%02x\n", eth->ether_dhost[0], eth->ether_dhost[1], eth->ether_dhost[2], eth->ether_dhost[3], eth->ether_dhost[4], eth->ether_dhost[5]);    //똑같이 eth 안에 ehter_dhost에 저장된 Destination Mac 주소를 출력합니다.
+      printf(" IP Header SRC   IP : %s\n", inet_ntoa(ip->iph_sourceip));    // inet_ntoa를 이용해 IP 헤더에 담긴 Source IP를 문자형으로 전환해 출력해줍니다.
+      printf(" IP Header DST   IP : %s\n", inet_ntoa(ip->iph_destip));    // 똑같이 inet_ntoa를 이용해 IP 헤더에 담긴 Destination IP를 문자형으로 전환해 출력해줍니다.
+      printf("TCP Header SRC PORT : %d\n", ntohs(tcp->tcp_sport));    //ntohs를 사용해 네트워크 바이트 순서인 Big Endian을 호스트 바이트 순서인 Little Endian으로 전환해 TCP 헤더에 있는 Source Port를 출력합니다.
+      printf("TCP Header DST PORT : %d\n", ntohs(tcp->tcp_dport));    // 똑같이 ntohs를 사용해 TCP 헤더에 있는 Destination Port를 출력합니다.
     }
   }
 }
