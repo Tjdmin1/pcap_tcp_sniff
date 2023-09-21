@@ -10,6 +10,7 @@
 
 
 ```c
+/* Ethernet header */
 struct ethheader {
     u_char  ether_dhost[6];    /* destination host address */
     u_char  ether_shost[6];    /* source host address */
@@ -55,5 +56,8 @@ struct tcpheader {
     u_short tcp_urp;                 /* urgent pointer */
 };
 ```
+필요한 헤더들(Ethernet, IP, TCP)을 찾아 코드를 추가해줍니다.
+
+
 ```c
 ```
