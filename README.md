@@ -56,8 +56,46 @@ struct tcpheader {
     u_short tcp_urp;                 /* urgent pointer */
 };
 ```
+
 필요한 헤더들(Ethernet, IP, TCP)을 찾아 코드를 추가해줍니다.
 
 
 ```c
+int main()
+{
+  pcap_t *handle;    //패킷 캡처 핸들
+  char *dev;    // 네트워크 디바이스 이름
+  char errbuf[PCAP_ERRBUF_SIZE];    // 오류 메시지를 저장할 버퍼
+  struct bpf_program fp;    // 필터 관련 구조체
+  char filter_exp[] = "tcp";    // 필터 내용
+  bpf_u_int32 net;    // 아이피 주소를 담을 변수
+  
+  dev = pcap_lookupdev(errbuf);    // 네트워크 디바이스 찾기
+  if (dev == NULL){    // Null 값인지 확인하기
+    printf("%s\n", errbuf);
+    exit(1);
+  }
+  printf("DEV : %s\n", dev);    // 네트워크 디바이스 이름 출력
+
+  handle = pcap_open_live(dev, BUFSIZ, 1, 1000, errbuf);    // 패킷 캡처 핸들 열기
+  if(handle == NULL){    // handle이 잘 생성 됬는지 검사
+  	printf("Handle is Null");
+  	exit(1);
+  }
+
+  pcap_compile(handle, &fp, filter_exp, 0, net);    // 필터 컴파일
+
+  if (pcap_setfilter(handle, &fp) !=0) {    // 필터 적용
+      pcap_perror(handle, "Error:");
+      exit(EXIT_FAILURE);
+  }
+
+  pcap_loop(handle, -1, got_packet, NULL);    //패킷 캡처 루프
+
+  pcap_close(handle); // 핸들 닫기
+
+  return 0;
+}
 ```
+
+위와 같은 코드로 네트워크 디바이스를 잡아주고 그 뒤 패킷 캡쳐 핸들을 열어 필터를 적용시키고 루프를 돌며 got_packet의 함수가 계속 실행되는 코드입니다.
