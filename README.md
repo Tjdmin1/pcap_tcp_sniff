@@ -1,4 +1,10 @@
 # pcap_tcp_sniff
+
+```bash
+gcc -o pcap_tcp_sniff pcap_tcp_sniff.c -lpcap
+sudo ./pcap_tcp_sniff
+```
+
 ## C language Header File
 ```c
 #include <stdlib.h>  //자료형이나 여러 기능이 있는 헤더파일
