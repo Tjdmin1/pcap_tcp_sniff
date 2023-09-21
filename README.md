@@ -1,5 +1,5 @@
 # pcap_tcp_sniff
-
+## C language Header File
 ```c
 #include <stdlib.h>  //자료형이나 여러 기능이 있는 헤더파일
 #include <stdio.h>  //기본 입출력 헤더파일
@@ -8,7 +8,7 @@
 ```
 필요한 헤더파일들을 선언해 줍니다.
 
-
+## 패킷 캡쳐에 필요한 header
 ```c
 /* Ethernet header */
 struct ethheader {
@@ -59,7 +59,7 @@ struct tcpheader {
 
 필요한 헤더들(Ethernet, IP, TCP)을 찾아 코드를 추가해줍니다.
 
-
+## Main Code 해석
 ```c
 int main()
 {
