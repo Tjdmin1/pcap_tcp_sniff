@@ -112,7 +112,7 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header,
     int ip_header_len = (ip->iph_ihl & 0x0F) * 4;    //IP 헤더 길이를 계산합니다.
     struct tcpheader *tcp = (struct tcpheader *)
                             (packet + sizeof(struct ethheader) + ip_header_len);    // IP 헤더 다음에 오는 데이터는 TCP 헤더로 해당 TCP 헤더 포인터를 생성합니다.
-    if(ip->iph_protocol == IPPROTO_TCP){    //한번 더 TCP 패킷인지 확인합니다.
+    if(ip->iph_protocol == IPPROTO_TCP){    //TCP 패킷인지 확인합니다.
       printf("===========================================\n");
       printf("ETH SRC Mac Address :%02x:%02x:%02x:%02x:%02x:%02x\n", eth->ether_shost[0], eth->ether_shost[1], eth->ether_shost[2], eth->ether_shost[3], eth->ether_shost[4], eth->ether_shost[5]);    //eth 안에 ether_shost 에 저장된 Mac 주소를 표시하는 배열들을 써줘서 Source mac 주소를 출력합니다.
       printf("ETH DST Mac Address :%02x:%02x:%02x:%02x:%02x:%02x\n", eth->ether_dhost[0], eth->ether_dhost[1], eth->ether_dhost[2], eth->ether_dhost[3], eth->ether_dhost[4], eth->ether_dhost[5]);    //똑같이 eth 안에 ehter_dhost에 저장된 Destination Mac 주소를 출력합니다.
@@ -124,3 +124,6 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header,
   }
 }
 ```
+
+주석과 같이 Ethernet Header와 IP Header, TCP Header의 포인터를 잡아주고 Ethernet 헤어 안에있는 ether_type으로 IP 유형 필드인지 확인하고, IP 헤더안에 있는 iph_protocol로 한번 더 TCP 패킷이 맞는지 확인해줍니다.
+그 다음 배열로 저장되어있는 맥 주소 출력과 IP 주소를 문자형으로 출력해주는 inet_ntoa 그리고 빅 엔디언에서 리틀 엔디언으로 바꿔서 포트를 제대로 출력하게 만드는 ntohs를 사용해 패킷의 정보를 가져옵니다.
